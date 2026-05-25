@@ -277,7 +277,7 @@
       margin-top: 14px;
     }
 
-    /* ── 移动端适配 ───────────────────────────── */
+    /* ── 移动端适配（保持左右布局） ──────────────────── */
     @media (max-width: 480px) {
       body { padding: 10px 0; }
       .header {
@@ -287,8 +287,8 @@
       }
       .header h1 { font-size: 15px; }
       .logo { width: 40px; height: 40px; }
-      .container { padding: 0 10px; }
-      .card { padding: 14px 12px 8px; border-radius: 12px; }
+      .container { padding: 0 8px; }
+      .card { padding: 14px 10px 8px; border-radius: 12px; }
 
       .car-type-row {
         gap: 6px 8px;
@@ -301,37 +301,26 @@
 
       .legend { gap: 12px; margin-bottom: 10px; font-size: 11px; }
 
-      /* 表格改为上下布局 */
-      table, tbody, tr, td {
-        display: block;
-        width: 100%;
-      }
-      tr {
-        margin-bottom: 6px;
-        border-bottom: none;
-      }
+      /* 表格保持左右布局，只调间距 */
+      table { width: 100%; }
       td {
-        padding: 0;
-        height: auto;
-        border-bottom: none;
+        padding: 8px 6px;
+        height: 44px;
       }
       td.label {
-        width: 100%;
-        text-align: left;
-        font-size: 13px;
-        padding: 4px 2px;
-        margin-bottom: 2px;
-        color: #666;
+        width: 38%;
+        font-size: 12px;
+        padding-right: 6px;
+        white-space: normal;
+        line-height: 1.3;
       }
-      td.value {
-        width: 100%;
-      }
+      td.label .icon { font-size: 10px; }
+      td.value { width: 62%; }
       td.value input {
         font-size: 16px;  /* 防止 iOS 自动缩放 */
-        padding: 10px 12px;
+        padding: 8px 8px;
+        width: 100%;
       }
-
-      /* 输入框更大更好点按 */
       td.manual-input .input-wrap,
       td.auto-calc .input-wrap,
       td.rate-cell .input-wrap {
@@ -339,25 +328,12 @@
         border-radius: 8px;
       }
 
-      /* 高亮行 */
-      td.highlight-blue, td.highlight-green {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 10px 12px;
-        border-radius: 8px;
-        margin-bottom: 4px;
-      }
-      td.highlight-blue .input-wrap, td.highlight-green .input-wrap {
-        width: auto;
-      }
+      /* 高亮行稍大 */
       td.highlight-blue input, td.highlight-green input {
-        font-size: 18px;
-        text-align: right;
-        background: transparent !important;
+        font-size: 17px;
       }
 
-      /* 按钮 */
+      /* 按钮适配 */
       .btn-row { gap: 16px; margin-top: 16px; }
       .btn {
         flex: 1;
