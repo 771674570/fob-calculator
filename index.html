@@ -676,20 +676,32 @@
   });
 
   // ── 自动计算 + Enter 跳转 ─────────────────────
-  const manualInputs = document.querySelectorAll('input[type="number"]:not([readonly])');
-  manualInputs.forEach((input, index) => {
+  // 获取当前可见且可编辑的输入框列表（动态，每次都重新获取）
+  function getVisibleInputs() {
+    return Array.from(document.querySelectorAll('td.value input[type="number"]:not([readonly])')).filter(input => {
+      // 排除隐藏行里的输入框
+      const tr = input.closest('tr');
+      return tr && tr.style.display !== 'none';
+    });
+  }
+
+  // 给所有输入框绑定事件
+  document.querySelectorAll('td.value input').forEach(input => {
     // 输入时自动计算
     input.addEventListener('input', function() {
       if (liveExchangeRate) calculate();
     });
     // 按 Enter 跳到下一个输入框
     input.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') {
+      if (e.key === 'Enter' || e.keyCode === 13) {
         e.preventDefault();
-        const next = manualInputs[index + 1];
-        if (next) {
+        e.stopPropagation();
+        const inputs = getVisibleInputs();
+        const idx = inputs.indexOf(this);
+        if (idx >= 0 && idx < inputs.length - 1) {
+          const next = inputs[idx + 1];
           next.focus();
-          next.select();
+          try { next.select(); } catch(ex) {}
         }
       }
     });
