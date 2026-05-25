@@ -465,11 +465,6 @@
       <td class="label"><span class="icon">✏️</span>优惠金额：</td>
       <td class="value manual-input"><div class="input-wrap"><input type="number" id="discount" value="0" min="0" step="1"></div></td>
     </tr>
-    <!-- 资源商利润 -->
-    <tr>
-      <td class="label"><span class="icon">✏️</span>资源商利润：</td>
-      <td class="value manual-input"><div class="input-wrap"><input type="number" id="resellerProfit" value="0" min="0" step="1"></div></td>
-    </tr>
     <!-- 开票金额 = 指导价 - 优惠金额 -->
     <tr>
       <td class="label"><span class="lock-icon" data-target="invoiceAmount" onclick="toggleLock(this)">🔒</span>开票金额：</td>
@@ -622,7 +617,6 @@
     used: {
       guidePrice: 90000,
       discount: 0,
-      resellerProfit: 0,
       registrationFee: 600,
       affiliationFee: 850,
       logisticsFee: 1400,
@@ -632,7 +626,6 @@
     ticket05: {
       guidePrice: 159100,
       discount: 32000,
-      resellerProfit: 0,
       registrationFee: 0,
       logisticsFee: 4000,
       capitalCost: 0,
@@ -641,7 +634,6 @@
     ticket04: {
       guidePrice: 131400,
       discount: 42500,
-      resellerProfit: 0,
       registrationFee: 0,
       logisticsFee: 2000,
       capitalCost: 0,
@@ -678,7 +670,6 @@
     document.getElementById('carModel').value = 'ID4 PRO';
     document.getElementById('guidePrice').value = d.guidePrice;
     document.getElementById('discount').value = d.discount;
-    document.getElementById('resellerProfit').value = d.resellerProfit;
     document.getElementById('registrationFee').value = d.registrationFee;
     document.getElementById('logisticsFee').value = d.logisticsFee;
     document.getElementById('capitalCost').value = d.capitalCost;
@@ -708,7 +699,6 @@
     // 获取手动输入值
     const guidePrice      = parseFloat(document.getElementById('guidePrice').value)      || 0;
     const discount        = parseFloat(document.getElementById('discount').value)        || 0;
-    const resellerProfit  = parseFloat(document.getElementById('resellerProfit').value)  || 0;
     const registrationFee = parseFloat(document.getElementById('registrationFee').value) || 0;
     const logisticsFee    = parseFloat(document.getElementById('logisticsFee').value)    || 0;
     const capitalCost     = parseFloat(document.getElementById('capitalCost').value)     || 0;
@@ -840,7 +830,6 @@
     document.getElementById('carModel').value = '';
     document.getElementById('guidePrice').value = 0;
     document.getElementById('discount').value = 0;
-    document.getElementById('resellerProfit').value = 0;
     document.getElementById('registrationFee').value = 0;
     document.getElementById('logisticsFee').value = 0;
     document.getElementById('capitalCost').value = 0;
