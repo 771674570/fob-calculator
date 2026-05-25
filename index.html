@@ -379,6 +379,30 @@
     .lock-icon.unlocked {
       opacity: 0.7;
     }
+    .lock-icon.overridden {
+      opacity: 1;
+    }
+
+    /* 被手动覆盖的字段 - 浅蓝色调提示 */
+    td.auto-calc.overridden {
+      background: #f0f4ff;
+    }
+    td.auto-calc.overridden .input-wrap {
+      border: 1px solid #b0c4de;
+      background: #f0f4ff;
+    }
+    td.auto-calc.overridden input {
+      color: #336699;
+      font-weight: 600;
+    }
+    td.highlight-blue.overridden input {
+      color: #fff;
+      font-weight: bold;
+    }
+    td.highlight-green.overridden input {
+      color: #fff;
+      font-weight: bold;
+    }
 
     /* 按钮行 */
     .btn-row {
@@ -446,6 +470,7 @@
   <div class="legend">
     <span><span class="dot dot-editable"></span> 可手动修改</span>
     <span><span class="dot dot-readonly"></span> 自动计算</span>
+    <span><span class="dot" style="background:#f0f4ff;border:1px solid #b0c4de;"></span> 手动覆盖</span>
   </div>
 
   <!-- FOB成本计算器表格 -->
@@ -607,6 +632,7 @@
     const data = {
       mode: getSelectedCarType(),
       lockedFields: Array.from(lockedFields),
+      manualOverrides: Array.from(manualOverrides),
       fields: {}
     };
     allFieldIds.forEach(id => {
@@ -644,7 +670,30 @@
         });
       }
 
-      // 恢复锁定状态
+      // 恢复手动覆盖状态（必须在恢复锁定状态之后处理，因为覆盖状态的视觉优先级更高）
+      if (data.manualOverrides && Array.isArray(data.manualOverrides)) {
+        data.manualOverrides.forEach(targetId => {
+          if (!manualOverrides.has(targetId)) {
+            manualOverrides.add(targetId);
+            const lockEl = document.querySelector(`.lock-icon[data-target="${targetId}"]`);
+            const input = document.getElementById(targetId);
+            const td = input ? input.closest('td') : null;
+
+            if (lockEl && !lockedFields.has(targetId)) {
+              // 锁回去但标记为覆盖
+              lockEl.textContent = '🖊️';
+              lockEl.classList.add('overridden');
+              lockEl.classList.remove('unlocked');
+            }
+            if (input && td && !lockedFields.has(targetId)) {
+              // 覆盖样式
+              applyOverriddenStyle(td, input);
+            }
+          }
+        });
+      }
+
+      // 恢复锁定状态（UI解锁的可编辑状态）
       if (data.lockedFields && Array.isArray(data.lockedFields)) {
         data.lockedFields.forEach(targetId => {
           if (!lockedFields.has(targetId)) {
@@ -654,19 +703,14 @@
             if (lockEl) {
               lockEl.textContent = '🔓';
               lockEl.classList.add('unlocked');
+              lockEl.classList.remove('overridden');
             }
             if (input) {
               input.removeAttribute('readonly');
               input.style.cursor = 'text';
               const td = input.closest('td');
               if (td) {
-                if (td.classList.contains('highlight-blue') || td.classList.contains('highlight-green')) {
-                  input.style.background = 'rgba(255,255,255,0.25)';
-                } else {
-                  td.className = 'value manual-input';
-                  td.querySelector('.input-wrap').style.border = '1.5px dashed #e0d28a';
-                  td.querySelector('.input-wrap').style.background = '#fffdf5';
-                }
+                applyManualInputStyle(td, input);
               }
             }
           }
@@ -738,6 +782,33 @@
     if (mode === 'used') {
       document.getElementById('affiliationFee').value = '';
     }
+
+    // 切换模式时清除手动覆盖状态和锁定状态
+    lockedFields.clear();
+    manualOverrides.clear();
+    // 恢复所有锁定图标和样式
+    document.querySelectorAll('.lock-icon').forEach(el => {
+      el.textContent = '🔒';
+      el.classList.remove('unlocked');
+      el.classList.remove('overridden');
+      const targetId = el.dataset.target;
+      const input = document.getElementById(targetId);
+      if (input) {
+        input.setAttribute('readonly', '');
+        input.style.cursor = 'default';
+        const td = input.closest('td');
+        if (td) {
+          if (td.classList.contains('highlight-blue') || td.classList.contains('highlight-green')) {
+            input.style.background = '';
+            td.classList.remove('overridden');
+          } else {
+            td.className = 'value auto-calc';
+            td.querySelector('.input-wrap').style.border = '1px solid #e8e8e8';
+            td.querySelector('.input-wrap').style.background = '#f8f9fa';
+          }
+        }
+      }
+    });
   }
 
   // 绑定模式切换事件
@@ -759,6 +830,11 @@
   document.querySelectorAll('td.value input').forEach(input => {
     // 输入时自动计算
     input.addEventListener('input', function() {
+      // 如果是自动计算字段（有lock-icon的）被手动编辑了，标记为手动覆盖
+      const fieldId = this.id;
+      if (lockedFields.has(fieldId)) {
+        manualOverrides.add(fieldId);
+      }
       if (liveExchangeRate) calculate();
     });
     // 按 Enter 跳到下一个输入框
@@ -804,7 +880,7 @@
     // 如果没有任何输入，自动计算字段也留空
     if (!hasInput) {
       ['invoiceAmount', 'taxRefund', 'channelFee', 'totalCost', 'fcaCost', 'fobCost', 'profit'].forEach(id => {
-        if (!lockedFields.has(id)) {
+        if (!manualOverrides.has(id)) {
           document.getElementById(id).value = '';
         }
       });
@@ -812,16 +888,16 @@
       return;
     }
 
-    // 自动计算字段（未解锁时才自动计算）
+    // 自动计算字段（未被手动覆盖时才自动计算）
     // 开票金额 = 指导价 - 优惠金额
-    if (!lockedFields.has('invoiceAmount')) {
+    if (!manualOverrides.has('invoiceAmount')) {
       const invoiceAmount = guidePrice - discount;
       document.getElementById('invoiceAmount').value = invoiceAmount.toFixed(2);
     }
     const invoiceAmount = parseFloat(document.getElementById('invoiceAmount').value) || 0;
 
     // 退税13% = 开票金额 / 1.13 * 0.13
-    if (!lockedFields.has('taxRefund')) {
+    if (!manualOverrides.has('taxRefund')) {
       const taxRefund = invoiceAmount / 1.13 * 0.13;
       document.getElementById('taxRefund').value = Math.round(taxRefund);
     }
@@ -837,7 +913,7 @@
     } else {
       // ── 增票模式 ──
       // 通到费 = 开票金额 × 系数 + 500
-      if (!lockedFields.has('channelFee')) {
+      if (!manualOverrides.has('channelFee')) {
         const coefficient = mode === 'ticket05' ? 0.055 : 0.04;
         const channelFee = invoiceAmount * coefficient + 500;
         document.getElementById('channelFee').value = channelFee.toFixed(1);
@@ -849,7 +925,7 @@
     }
 
     // 总成本
-    if (!lockedFields.has('totalCost')) {
+    if (!manualOverrides.has('totalCost')) {
       document.getElementById('totalCost').value = Math.round(totalCost);
     } else {
       totalCost = parseFloat(document.getElementById('totalCost').value) || 0;
@@ -857,7 +933,7 @@
 
     // FCA港口成本 = 总成本 / 汇率
     let fcaCost = 0;
-    if (!lockedFields.has('fcaCost')) {
+    if (!manualOverrides.has('fcaCost')) {
       fcaCost = totalCost / liveExchangeRate;
       document.getElementById('fcaCost').value = Math.round(fcaCost);
     } else {
@@ -866,7 +942,7 @@
 
     // FOB成本 = FCA港口成本 + 400
     let fobCost = 0;
-    if (!lockedFields.has('fobCost')) {
+    if (!manualOverrides.has('fobCost')) {
       fobCost = fcaCost + 400;
       document.getElementById('fobCost').value = Math.round(fobCost);
     } else {
@@ -874,7 +950,7 @@
     }
 
     // 利润 = 销售价格 - FOB成本
-    if (!lockedFields.has('profit')) {
+    if (!manualOverrides.has('profit')) {
       const profit = salePrice - fobCost;
       document.getElementById('profit').value = Math.round(profit);
     }
@@ -883,8 +959,11 @@
     saveToStorage();
   }
 
-  // ── 锁定/解锁开关 ─────────────────────────────
+  // ── 锁定/解锁/手动覆盖 ─────────────────────────
+  // lockedFields: 当前UI处于"解锁可编辑"状态的字段
   const lockedFields = new Set();
+  // manualOverrides: 曾经被手动覆盖过的字段（锁回后仍保留手动值，只有重置才清除）
+  const manualOverrides = new Set();
 
   function toggleLock(el) {
     const targetId = el.dataset.target;
@@ -892,39 +971,68 @@
     const td = input.closest('td');
 
     if (lockedFields.has(targetId)) {
-          // 当前是解锁状态 → 锁定
+      // 当前是解锁状态 → 锁回去
       lockedFields.delete(targetId);
-      el.textContent = '🔒';
+      el.textContent = manualOverrides.has(targetId) ? '🖊️' : '🔒';
       el.classList.remove('unlocked');
+      if (manualOverrides.has(targetId)) {
+        el.classList.add('overridden');
+      }
       input.setAttribute('readonly', '');
       input.style.cursor = 'default';
-      // 恢复自动计算样式
-      if (td.classList.contains('highlight-blue') || td.classList.contains('highlight-green')) {
-        // 高亮行保持原样
+
+      // 恢复样式（手动覆盖的用浅蓝色调，普通的用灰色）
+      if (manualOverrides.has(targetId)) {
+        applyOverriddenStyle(td, input);
       } else {
-        td.className = 'value auto-calc';
-        td.querySelector('.input-wrap').style.border = '1px solid #e8e8e8';
-        td.querySelector('.input-wrap').style.background = '#f8f9fa';
+        applyAutoCalcStyle(td, input);
       }
-      // 重新计算
-      calculate();
+      // 不重新计算！手动覆盖的值保留，没覆盖的也不需要重算
     } else {
       // 当前是锁定状态 → 解锁
       lockedFields.add(targetId);
       el.textContent = '🔓';
+      el.classList.remove('overridden');
       el.classList.add('unlocked');
       input.removeAttribute('readonly');
       input.style.cursor = 'text';
       // 改为可编辑样式
-      if (td.classList.contains('highlight-blue') || td.classList.contains('highlight-green')) {
-        // 高亮行只改输入框背景
-        input.style.background = 'rgba(255,255,255,0.25)';
-      } else {
-        td.className = 'value manual-input';
-        td.querySelector('.input-wrap').style.border = '1.5px dashed #e0d28a';
-        td.querySelector('.input-wrap').style.background = '#fffdf5';
-      }
+      applyManualInputStyle(td, input);
       input.focus();
+    }
+  }
+
+  // 样式辅助函数
+  function applyAutoCalcStyle(td, input) {
+    input.style.background = 'transparent';
+    if (td.classList.contains('highlight-blue') || td.classList.contains('highlight-green')) {
+      // 高亮行保持原样
+    } else {
+      td.className = 'value auto-calc';
+      td.querySelector('.input-wrap').style.border = '1px solid #e8e8e8';
+      td.querySelector('.input-wrap').style.background = '#f8f9fa';
+    }
+  }
+
+  function applyManualInputStyle(td, input) {
+    if (td.classList.contains('highlight-blue') || td.classList.contains('highlight-green')) {
+      input.style.background = 'rgba(255,255,255,0.25)';
+    } else {
+      td.className = 'value manual-input';
+      td.querySelector('.input-wrap').style.border = '1.5px dashed #e0d28a';
+      td.querySelector('.input-wrap').style.background = '#fffdf5';
+    }
+  }
+
+  function applyOverriddenStyle(td, input) {
+    input.style.background = 'transparent';
+    if (td.classList.contains('highlight-blue') || td.classList.contains('highlight-green')) {
+      // 高亮行加 overridden 标记
+      td.classList.add('overridden');
+    } else {
+      td.className = 'value auto-calc overridden';
+      td.querySelector('.input-wrap').style.border = '1px solid #b0c4de';
+      td.querySelector('.input-wrap').style.background = '#f0f4ff';
     }
   }
 
@@ -952,12 +1060,14 @@
     document.getElementById('fobCost').value = '';
     document.getElementById('profit').value = '';
 
-    // 清除所有锁定状态
+    // 清除所有锁定状态和手动覆盖
     lockedFields.clear();
+    manualOverrides.clear();
     // 恢复所有锁定图标和样式
     document.querySelectorAll('.lock-icon').forEach(el => {
       el.textContent = '🔒';
       el.classList.remove('unlocked');
+      el.classList.remove('overridden');
       const targetId = el.dataset.target;
       const input = document.getElementById(targetId);
       if (input) {
@@ -967,6 +1077,7 @@
         if (td) {
           if (td.classList.contains('highlight-blue') || td.classList.contains('highlight-green')) {
             input.style.background = '';
+            td.classList.remove('overridden');
           } else {
             td.className = 'value auto-calc';
             td.querySelector('.input-wrap').style.border = '1px solid #e8e8e8';
