@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <title>河南迅星国际贸易 - FOB成本计算器</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+      font-size: 14px;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f0 100%);
+      color: #333;
+      min-height: 100vh;
+      padding: 20px 0;
+    }
+
+    /* 顶部标题 */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 18px 0 14px;
+      border-bottom: 2px solid #4fc3f7;
+      max-width: 560px;
+      margin: 0 auto 20px;
+    }
+    .logo {
+      width: 52px;
+      height: 52px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    }
+    .header h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1a3a5c;
+      letter-spacing: 1px;
+    }
+
+    /* 主体容器 - 卡片效果 */
+    .container {
+      max-width: 540px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      padding: 20px 18px 10px;
+    }
+
+    /* 车型选择单选行 */
+    .car-type-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 16px;
+      margin-bottom: 16px;
+      align-items: center;
+    }
+    .car-type-row label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      font-size: 13px;
+      color: #444;
+      background: #f4f6f8;
+      padding: 5px 12px;
+      border-radius: 16px;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+    .car-type-row label:hover {
+      background: #e8f4fd;
+      border-color: #4fc3f7;
+    }
+    .car-type-row input[type="radio"] {
+      accent-color: #4fc3f7;
+      width: 14px;
+      height: 14px;
+    }
+
+    /* 表格 */
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+    td {
+      padding: 7px 12px;
+      height: 40px;
+      border-bottom: 1px solid #eef0f3;
+      vertical-align: middle;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    /* 标签列 */
+    td.label {
+      width: 34%;
+      background: transparent;
+      color: #555;
+      text-align: right;
+      white-space: nowrap;
+      font-size: 13px;
+      padding-right: 14px;
+    }
+    td.label .icon {
+      display: inline-block;
+      width: 16px;
+      text-align: center;
+      margin-right: 4px;
+      font-size: 11px;
+    }
+    /* 值列 */
+    td.value {
+      width: 66%;
+      position: relative;
+    }
+    td.value input {
+      width: 100%;
+      border: none;
+      outline: none;
+      font-size: 14px;
+      background: transparent;
+      color: #333;
+      padding: 5px 8px;
+      border-radius: 6px;
+      transition: background 0.2s;
+      -webkit-appearance: none;
+      -moz-appearance: textfield;
+    }
+    td.value input::-webkit-outer-spin-button,
+    td.value input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* ✏️ 可手动输入 - 浅黄背景 + 虚线边框提示 */
+    td.manual-input {
+      background: #fffdf5;
+    }
+    td.manual-input .input-wrap {
+      border: 1.5px dashed #e0d28a;
+      border-radius: 6px;
+      padding: 1px;
+      background: #fffdf5;
+    }
+    td.manual-input input {
+      background: transparent;
+      cursor: text;
+    }
+    td.manual-input input:focus {
+      background: #fffbe6;
+    }
+
+    /* 🔒 自动计算 - 浅灰背景 */
+    td.auto-calc {
+      background: #f8f9fa;
+    }
+    td.auto-calc .input-wrap {
+      border: 1px solid #e8e8e8;
+      border-radius: 6px;
+      padding: 1px;
+      background: #f8f9fa;
+    }
+    td.auto-calc input {
+      background: transparent;
+      color: #777;
+      cursor: default;
+      font-weight: 500;
+    }
+
+    /* 高亮结果字段 */
+    td.highlight-blue {
+      background: linear-gradient(135deg, #4fc3f7 0%, #039be5 100%);
+      font-weight: bold;
+      color: #fff;
+      border-radius: 0;
+    }
+    td.highlight-blue .input-wrap {
+      border: none;
+      background: transparent;
+    }
+    td.highlight-blue input {
+      color: #fff;
+      font-weight: bold;
+      font-size: 15px;
+    }
+    td.highlight-green {
+      background: linear-gradient(135deg, #81c784 0%, #43a047 100%);
+      font-weight: bold;
+      color: #fff;
+    }
+    td.highlight-green .input-wrap {
+      border: none;
+      background: transparent;
+    }
+    td.highlight-green input {
+      color: #fff;
+      font-weight: bold;
+      font-size: 15px;
+    }
+
+    /* 汇率只读样式 */
+    td.rate-cell {
+      background: #f8f9fa;
+    }
+    td.rate-cell .input-wrap {
+      border: 1px solid #e8e8e8;
+      border-radius: 6px;
+      padding: 1px;
+      background: #f8f9fa;
+    }
+    td.rate-cell input {
+      color: #777;
+      cursor: not-allowed;
+      font-weight: 500;
+    }
+    .rate-loading { font-size: 11px; color: #999; margin-left: 4px; }
+    .rate-ok     { font-size: 11px; color: #4caf50; margin-left: 4px; }
+    .rate-err    { font-size: 11px; color: #d9534f; margin-left: 4px; }
+
+    /* 按钮行 */
+    .btn-row {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-top: 22px;
+      padding-bottom: 6px;
+    }
+    .btn {
+      padding: 10px 40px;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      border-radius: 24px;
+      cursor: pointer;
+      letter-spacing: 2px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.13);
+    }
+    .btn:active {
+      transform: scale(0.96);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.10);
+    }
+    .btn-calc {
+      background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+      color: #1a3a2a;
+    }
+    .btn-calc:hover {
+      background: linear-gradient(135deg, #38d96a 0%, #2ee8c8 100%);
+      box-shadow: 0 6px 20px rgba(67,233,123,0.35);
+      transform: translateY(-1px);
+    }
+    .btn-reset {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: #fff;
+    }
+    .btn-reset:hover {
+      background: linear-gradient(135deg, #e581f0 0%, #e8465c 100%);
+      box-shadow: 0 6px 20px rgba(245,87,108,0.35);
+      transform: translateY(-1px);
+    }
+
+    /* 底部说明 */
+    .footer-note {
+      text-align: center;
+      font-size: 11px;
+      color: #aaa;
+      margin-top: 14px;
+    }
+    .legend {
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      margin-bottom: 12px;
+      font-size: 12px;
+      color: #888;
+    }
+    .legend span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .legend .dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+    }
+    .dot-editable  { background: #fff8dc; border: 1px dashed #e0d28a; }
+    .dot-readonly  { background: #f0f0f0; border: 1px solid #ddd; }
+
+    /* 锁定/解锁图标 */
+    .lock-icon {
+      display: inline-block;
+      width: 16px;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+      font-size: 11px;
+      transition: transform 0.15s;
+    }
+    .lock-icon:hover {
+      transform: scale(1.2);
+    }
+    .lock-icon.unlocked {
+      opacity: 0.7;
+    }
+
+    /* 按钮行 */
+    .btn-row {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .btn {
+      padding: 10px 36px;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      border-radius: 24px;
+      cursor: pointer;
+      letter-spacing: 2px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+    }
+    .btn:active {
+      transform: scale(0.96);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+    .btn-calc {
+      background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+      color: #1a3a2a;
+    }
+    .btn-calc:hover {
+      background: linear-gradient(135deg, #38d96a 0%, #2ee8c8 100%);
+      box-shadow: 0 6px 20px rgba(67,233,123,0.35);
+      transform: translateY(-1px);
+    }
+    .btn-reset {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: #fff;
+    }
+    .btn-reset:hover {
+      background: linear-gradient(135deg, #e581f0 0%, #e8465c 100%);
+      box-shadow: 0 6px 20px rgba(245,87,108,0.35);
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body>
+
+<!-- 顶部 Logo + 标语 -->
+<div class="header">
+  <img src="favicon.png" alt="迅星AUTO" class="logo">
+  <h1>迅星国际贸易，助力中国汽车出海！</h1>
+</div>
+
+<div class="container">
+  <div class="card">
+
+  <!-- 车型选择 -->
+  <div class="car-type-row" id="carTypeRow">
+    <label><input type="radio" name="carType" value="used" checked> 二手车FOB</label>
+    <label><input type="radio" name="carType" value="ticket05"> 0.05+500增票FOB</label>
+    <label><input type="radio" name="carType" value="ticket04"> 0.04+500增票FOB</label>
+  </div>
+
+  <!-- 图例 -->
+  <div class="legend">
+    <span><span class="dot dot-editable"></span> 可手动修改</span>
+    <span><span class="dot dot-readonly"></span> 自动计算</span>
+  </div>
+
+  <!-- FOB成本计算器表格 -->
+  <table>
+    <!-- 车型 -->
+    <tr>
+      <td class="label"><span class="icon">✏️</span>车型：</td>
+      <td class="value manual-input"><div class="input-wrap"><input type="text" id="carModel" value="ID4 PRO" placeholder="输入车型"></div></td>
+    </tr>
+    <!-- 指导价 -->
+    <tr>
+      <td class="label"><span class="icon">✏️</span>指导价：</td>
+      <td class="value manual-input"><div class="input-wrap"><input type="number" id="guidePrice" value="90000" min="0" step="1"></div></td>
+    </tr>
+    <!-- 优惠金额 -->
+    <tr>
+      <td class="label"><span class="icon">✏️</span>优惠金额：</td>
+      <td class="value manual-input"><div class="input-wrap"><input type="number" id="discount" value="0" min="0" step="1"></div></td>
+    </tr>
+    <!-- 资源商利润 -->
+    <tr>
+      <td class="label"><span class="icon">✏️</span>资源商利润：</td>
+      <td class="value manual-input"><div class="input-wrap"><input type="number" id="resellerProfit" value="0" min="0" step="1"></div></td>
+    </tr>
+    <!-- 开票金额 = 指导价 - 优惠金额 -->
+    <tr>
+      <td class="label"><span class="lock-icon" data-target="invoiceAmount" onclick="toggleLock(this)">🔒</span>开票金额：</td>
+      <td class="value auto-calc"><div class="input-wrap"><input type="number" id="invoiceAmount" value="0" readonly></div></td>
+    </tr>
+    <!-- 退税12.5% = 开票金额/1.13*0.13 -->
+    <tr>
+      <td class="label"><span class="lock-icon" data-target="taxRefund" onclick="toggleLock(this)">🔒</span>退税12.5%：</td>
+      <td class="value auto-calc"><div class="input-wrap"><input type="number" id="taxRefund" value="0" readonly></div></td>
+    </tr>
+    <!-- 上牌+转移+交强险+车船税 -->
+    <tr>
+      <td class="label"><span class="icon">✏️</span>上牌+转移+交强险+车船税：</td>
+      <td class="value manual-input"><div class="input-wrap"><input type="number" id="registrationFee" value="600" min="0" step="1"></div></td>
+    </tr>
+    <!-- 增值票金额 = 开票金额 -->
+    <tr>
+      <td class="label"><span class="lock-icon" data-target="vatAmount" onclick="toggleLock(this)">🔒</span>增值票金额：</td>
+      <td class="value auto-calc"><div class="input-wrap"><input type="number" id="vatAmount" value="0" readonly></div></td>
+    </tr>
+    <!-- 通到费（增票模式显示，二手车模式隐藏） -->
+    <tr id="rowChannelFee" style="display:none;">
+      <td class="label"><span class="lock-icon" data-target="channelFee" onclick="toggleLock(this)">🔒</span>通到费：</td>
+      <td class="value auto-calc"><div class="input-wrap"><input type="number" id="channelFee" value="0" readonly></div></td>
+    </tr>
+    <!-- 挂靠费用（二手车模式显示，增票模式隐藏） -->
+    <tr id="rowAffiliation">
+      <td class="label"><span class="icon">✏️</span>挂靠费用：</td>
+      <td class="value manual-input"><div class="input-wrap"><input type="number" id="affiliationFee" value="850" min="0" step="1"></div></td>
+    </tr>
+    <!-- 物流运费费用 -->
+    <tr>
+      <td class="label"><span class="icon">✏️</span>物流运费费用：</td>
+      <td class="value manual-input"><div class="input-wrap"><input type="number" id="logisticsFee" value="1400" min="0" step="1"></div></td>
+    </tr>
+    <!-- 资金成本30天 -->
+    <tr>
+      <td class="label"><span class="icon">✏️</span>资金成本30天：</td>
+      <td class="value manual-input"><div class="input-wrap"><input type="number" id="capitalCost" value="0" min="0" step="1"></div></td>
+    </tr>
+    <!-- 总成本 -->
+    <tr>
+      <td class="label"><span class="lock-icon" data-target="totalCost" onclick="toggleLock(this)">🔒</span>总成本：</td>
+      <td class="value auto-calc"><div class="input-wrap"><input type="number" id="totalCost" value="0" readonly></div></td>
+    </tr>
+    <!-- 汇率 -->
+    <tr>
+      <td class="label"><span class="icon">🌐</span>实时汇率：</td>
+      <td class="value rate-cell">
+        <div class="input-wrap" style="display:flex;align-items:center;gap:8px;">
+          <input type="number" id="exchangeRate" value="--" readonly title="汇率由系统实时获取，不可手动修改" style="flex:1;min-width:0;">
+          <span id="rateStatus" class="rate-loading" style="white-space:nowrap;flex-shrink:0;">获取中…</span>
+        </div>
+      </td>
+    </tr>
+    <!-- FCA港口成本 = 总成本/汇率 -->
+    <tr>
+      <td class="label"><span class="lock-icon" data-target="fcaCost" onclick="toggleLock(this)">🔒</span>FCA港口成本：</td>
+      <td class="value auto-calc"><div class="input-wrap"><input type="number" id="fcaCost" value="0" readonly></div></td>
+    </tr>
+    <!-- FOB成本 = FCA+400 -->
+    <tr>
+      <td class="label highlight-blue"><span class="lock-icon" data-target="fobCost" onclick="toggleLock(this)">🔒</span>FOB成本：</td>
+      <td class="value highlight-blue"><div class="input-wrap"><input type="number" id="fobCost" value="0" readonly></div></td>
+    </tr>
+    <!-- 销售价格 -->
+    <tr>
+      <td class="label"><span class="icon">✏️</span>销售价格：</td>
+      <td class="value manual-input"><div class="input-wrap"><input type="number" id="salePrice" value="13000" min="0" step="1"></div></td>
+    </tr>
+    <!-- 利润 = 销售价格-FOB成本 -->
+    <tr>
+      <td class="label highlight-green"><span class="lock-icon" data-target="profit" onclick="toggleLock(this)">🔒</span>利润：</td>
+      <td class="value highlight-green"><div class="input-wrap"><input type="number" id="profit" value="0" readonly></div></td>
+    </tr>
+  </table>
+
+  <!-- 按钮 -->
+  <div class="btn-row">
+    <button class="btn btn-calc" onclick="calculate()">计算</button>
+    <button class="btn btn-reset" onclick="resetForm()">重置</button>
+  </div>
+  <div class="footer-note">汇率每10分钟自动刷新 · 仅供内部参考</div>
+
+  </div>
+</div>
+
+<script>
+  // ── 实时汇率获取（美元兑离岸人民币 USDCNH）──────────────
+  let liveExchangeRate = null;
+
+  async function fetchFromEastMoney() {
+    const url = 'https://push2.eastmoney.com/api/qt/stock/get?secid=133.USDCNH&fields=f43,f57,f58&ut=fa5fd1943c7b386f172d6893dbbd1d0c';
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error('东方财富 HTTP ' + resp.status);
+    const data = await resp.json();
+    if (!data.data || !data.data.f43) throw new Error('东方财富返回数据为空');
+    const raw = data.data.f43;
+    return parseFloat((raw / 10000).toFixed(4));
+  }
+
+  async function fetchFromFrankfurter() {
+    const resp = await fetch('https://api.frankfurter.app/latest?from=USD&to=CNY');
+    if (!resp.ok) throw new Error('Frankfurter HTTP ' + resp.status);
+    const data = await resp.json();
+    const cny = data.rates && data.rates.CNY;
+    if (!cny) throw new Error('Frankfurter 数据异常');
+    return parseFloat(parseFloat(cny).toFixed(4));
+  }
+
+  async function fetchExchangeRate() {
+    const statusEl = document.getElementById('rateStatus');
+    const rateInput = document.getElementById('exchangeRate');
+
+    try {
+      liveExchangeRate = await fetchFromEastMoney() - 0.02;
+      rateInput.value = liveExchangeRate.toFixed(4);
+      statusEl.textContent = '✓ 实时';
+      statusEl.className = 'rate-ok';
+    } catch (e1) {
+      try {
+        liveExchangeRate = await fetchFromFrankfurter() - 0.02;
+        rateInput.value = liveExchangeRate.toFixed(4);
+        statusEl.textContent = '✓ 实时';
+        statusEl.className = 'rate-ok';
+      } catch (e2) {
+        liveExchangeRate = 7.2500;
+        rateInput.value = liveExchangeRate;
+        statusEl.textContent = '⚠ 离线默认值';
+        statusEl.className = 'rate-err';
+      }
+    }
+  }
+
+  // 页面加载时立即获取，之后每 10 分钟刷新一次
+  fetchExchangeRate();
+  setInterval(fetchExchangeRate, 10 * 60 * 1000);
+
+  // ── 模式切换 ──────────────────────────────────
+  function getSelectedCarType() {
+    const radios = document.getElementsByName('carType');
+    for (const r of radios) {
+      if (r.checked) return r.value;
+    }
+    return 'used';
+  }
+
+  // 各模式的默认参数配置
+  const modeDefaults = {
+    used: {
+      guidePrice: 90000,
+      discount: 0,
+      resellerProfit: 0,
+      registrationFee: 600,
+      affiliationFee: 850,
+      logisticsFee: 1400,
+      capitalCost: 0,
+      salePrice: 13000
+    },
+    ticket05: {
+      guidePrice: 159100,
+      discount: 32000,
+      resellerProfit: 0,
+      registrationFee: 0,
+      logisticsFee: 4000,
+      capitalCost: 0,
+      salePrice: 19100
+    },
+    ticket04: {
+      guidePrice: 131400,
+      discount: 42500,
+      resellerProfit: 0,
+      registrationFee: 0,
+      logisticsFee: 2000,
+      capitalCost: 0,
+      salePrice: 13500
+    }
+  };
+
+  // 切换模式时更新界面
+  function onModeChange() {
+    const mode = getSelectedCarType();
+    const rowChannel = document.getElementById('rowChannelFee');
+    const rowAffiliation = document.getElementById('rowAffiliation');
+
+    if (mode === 'used') {
+      // 二手车模式：显示挂靠费用，隐藏通到费
+      rowChannel.style.display = 'none';
+      rowAffiliation.style.display = '';
+    } else {
+      // 增票模式：显示通到费，隐藏挂靠费用
+      rowChannel.style.display = '';
+      rowAffiliation.style.display = 'none';
+    }
+
+    // 切换模式时填入默认数据并自动计算
+    applyDefaults(mode);
+    if (liveExchangeRate) {
+      calculate();
+    }
+  }
+
+  // 填入默认数据（切换模式时调用）
+  function applyDefaults(mode) {
+    const d = modeDefaults[mode];
+    document.getElementById('carModel').value = 'ID4 PRO';
+    document.getElementById('guidePrice').value = d.guidePrice;
+    document.getElementById('discount').value = d.discount;
+    document.getElementById('resellerProfit').value = d.resellerProfit;
+    document.getElementById('registrationFee').value = d.registrationFee;
+    document.getElementById('logisticsFee').value = d.logisticsFee;
+    document.getElementById('capitalCost').value = d.capitalCost;
+    document.getElementById('salePrice').value = d.salePrice;
+
+    if (mode === 'used') {
+      document.getElementById('affiliationFee').value = d.affiliationFee;
+    } else {
+      document.getElementById('affiliationFee').value = 0;
+    }
+  }
+
+  // 绑定模式切换事件
+  document.querySelectorAll('input[name="carType"]').forEach(r => {
+    r.addEventListener('change', onModeChange);
+  });
+
+  // ── 计算逻辑 ──────────────────────────────────
+  function calculate() {
+    if (!liveExchangeRate) {
+      alert('汇率尚未获取到，请稍候再试');
+      return;
+    }
+
+    const mode = getSelectedCarType();
+
+    // 获取手动输入值
+    const guidePrice      = parseFloat(document.getElementById('guidePrice').value)      || 0;
+    const discount        = parseFloat(document.getElementById('discount').value)        || 0;
+    const resellerProfit  = parseFloat(document.getElementById('resellerProfit').value)  || 0;
+    const registrationFee = parseFloat(document.getElementById('registrationFee').value) || 0;
+    const logisticsFee    = parseFloat(document.getElementById('logisticsFee').value)    || 0;
+    const capitalCost     = parseFloat(document.getElementById('capitalCost').value)     || 0;
+    const salePrice       = parseFloat(document.getElementById('salePrice').value)       || 0;
+
+    // 自动计算字段（未解锁时才自动计算）
+    // 开票金额 = 指导价 - 优惠金额
+    if (!lockedFields.has('invoiceAmount')) {
+      const invoiceAmount = guidePrice - discount;
+      document.getElementById('invoiceAmount').value = invoiceAmount.toFixed(2);
+    }
+    const invoiceAmount = parseFloat(document.getElementById('invoiceAmount').value) || 0;
+
+    // 退税12.5% = 开票金额 / 1.13 * 0.13
+    if (!lockedFields.has('taxRefund')) {
+      const taxRefund = invoiceAmount / 1.13 * 0.13;
+      document.getElementById('taxRefund').value = Math.round(taxRefund);
+    }
+    const taxRefund = parseFloat(document.getElementById('taxRefund').value) || 0;
+
+    // 增值票金额 = 开票金额
+    if (!lockedFields.has('vatAmount')) {
+      document.getElementById('vatAmount').value = invoiceAmount.toFixed(2);
+    }
+
+    let totalCost = 0;
+
+    if (mode === 'used') {
+      // ── 二手车模式 ──
+      // 总成本 = 开票金额 - 退税 + 上牌+转移+交强险+车船税 + 挂靠费用 + 物流运费费用 + 资金成本30天
+      const affiliationFee = parseFloat(document.getElementById('affiliationFee').value) || 0;
+      totalCost = invoiceAmount - taxRefund + registrationFee + affiliationFee + logisticsFee + capitalCost;
+    } else {
+      // ── 增票模式 ──
+      // 通到费 = 增值票金额 × 系数 + 500
+      if (!lockedFields.has('channelFee')) {
+        const coefficient = mode === 'ticket05' ? 0.055 : 0.04;
+        const channelFee = invoiceAmount * coefficient + 500;
+        document.getElementById('channelFee').value = channelFee.toFixed(1);
+      }
+      const channelFee = parseFloat(document.getElementById('channelFee').value) || 0;
+
+      // 总成本 = 开票金额 + 上牌+转移+交强险+车船税 + 通到费 + 物流运费费用 + 资金成本30天 - 退税
+      // Excel公式: =I6+I8+I10+I11+I12-I7
+      totalCost = invoiceAmount + registrationFee + channelFee + logisticsFee + capitalCost - taxRefund;
+    }
+
+    // 总成本
+    if (!lockedFields.has('totalCost')) {
+      document.getElementById('totalCost').value = Math.round(totalCost);
+    } else {
+      totalCost = parseFloat(document.getElementById('totalCost').value) || 0;
+    }
+
+    // FCA港口成本 = 总成本 / 汇率
+    let fcaCost = 0;
+    if (!lockedFields.has('fcaCost')) {
+      fcaCost = totalCost / liveExchangeRate;
+      document.getElementById('fcaCost').value = Math.round(fcaCost);
+    } else {
+      fcaCost = parseFloat(document.getElementById('fcaCost').value) || 0;
+    }
+
+    // FOB成本 = FCA港口成本 + 400
+    let fobCost = 0;
+    if (!lockedFields.has('fobCost')) {
+      fobCost = fcaCost + 400;
+      document.getElementById('fobCost').value = Math.round(fobCost);
+    } else {
+      fobCost = parseFloat(document.getElementById('fobCost').value) || 0;
+    }
+
+    // 利润 = 销售价格 - FOB成本
+    if (!lockedFields.has('profit')) {
+      const profit = salePrice - fobCost;
+      document.getElementById('profit').value = Math.round(profit);
+    }
+  }
+
+  // ── 锁定/解锁开关 ─────────────────────────────
+  const lockedFields = new Set();
+
+  function toggleLock(el) {
+    const targetId = el.dataset.target;
+    const input = document.getElementById(targetId);
+    const td = input.closest('td');
+
+    if (lockedFields.has(targetId)) {
+      // 当前是解锁状态 → 锁定
+      lockedFields.delete(targetId);
+      el.textContent = '🔒';
+      el.classList.remove('unlocked');
+      input.setAttribute('readonly', '');
+      input.style.cursor = 'default';
+      // 恢复自动计算样式
+      if (td.classList.contains('highlight-blue') || td.classList.contains('highlight-green')) {
+        // 高亮行保持原样
+      } else {
+        td.className = 'value auto-calc';
+        td.querySelector('.input-wrap').style.border = '1px solid #e8e8e8';
+        td.querySelector('.input-wrap').style.background = '#f8f9fa';
+      }
+      // 重新计算该字段
+      calculate();
+    } else {
+      // 当前是锁定状态 → 解锁
+      lockedFields.add(targetId);
+      el.textContent = '🔓';
+      el.classList.add('unlocked');
+      input.removeAttribute('readonly');
+      input.style.cursor = 'text';
+      // 改为可编辑样式
+      if (td.classList.contains('highlight-blue') || td.classList.contains('highlight-green')) {
+        // 高亮行只改输入框背景
+        input.style.background = 'rgba(255,255,255,0.25)';
+      } else {
+        td.className = 'value manual-input';
+        td.querySelector('.input-wrap').style.border = '1.5px dashed #e0d28a';
+        td.querySelector('.input-wrap').style.background = '#fffdf5';
+      }
+      input.focus();
+    }
+  }
+
+  function resetForm() {
+    const mode = getSelectedCarType();
+
+    // 只重置当前模式可见的手动输入字段，不动自动计算字段和汇率
+    document.getElementById('carModel').value = '';
+    document.getElementById('guidePrice').value = 0;
+    document.getElementById('discount').value = 0;
+    document.getElementById('resellerProfit').value = 0;
+    document.getElementById('registrationFee').value = 0;
+    document.getElementById('logisticsFee').value = 0;
+    document.getElementById('capitalCost').value = 0;
+    document.getElementById('salePrice').value = 0;
+
+    if (mode === 'used') {
+      document.getElementById('affiliationFee').value = 0;
+    }
+
+    // 自动计算字段（开票金额、退税、增值票、通到费、总成本、FCA、FOB、利润）和汇率均不重置
+  }
+
+  // 页面加载时自动计算一次（使用默认值）
+  window.addEventListener('load', function() {
+    onModeChange();
+    setTimeout(calculate, 2000);
+  });
+</script>
+
+</body>
+</html>
