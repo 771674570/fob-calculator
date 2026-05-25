@@ -453,52 +453,52 @@
     <!-- 指导价 -->
     <tr>
       <td class="label"><span class="icon">✏️</span>指导价：</td>
-      <td class="value manual-input"><div class="input-wrap"><input type="number" id="guidePrice" value="90000" min="0" step="1"></div></td>
+      <td class="value manual-input"><div class="input-wrap"><input type="number" id="guidePrice" value="" min="0" step="1"></div></td>
     </tr>
     <!-- 优惠金额 -->
     <tr>
       <td class="label"><span class="icon">✏️</span>优惠金额：</td>
-      <td class="value manual-input"><div class="input-wrap"><input type="number" id="discount" value="0" min="0" step="1"></div></td>
+      <td class="value manual-input"><div class="input-wrap"><input type="number" id="discount" value="" min="0" step="1"></div></td>
     </tr>
     <!-- 开票金额 = 指导价 - 优惠金额 -->
     <tr>
       <td class="label"><span class="lock-icon" data-target="invoiceAmount" onclick="toggleLock(this)">🔒</span>开票金额：</td>
-      <td class="value auto-calc"><div class="input-wrap"><input type="number" id="invoiceAmount" value="0" readonly></div></td>
+      <td class="value auto-calc"><div class="input-wrap"><input type="number" id="invoiceAmount" value="" readonly></div></td>
     </tr>
     <!-- 退税13% = 开票金额/1.13*0.13 -->
     <tr>
       <td class="label"><span class="lock-icon" data-target="taxRefund" onclick="toggleLock(this)">🔒</span>退税13%：</td>
-      <td class="value auto-calc"><div class="input-wrap"><input type="number" id="taxRefund" value="0" readonly></div></td>
+      <td class="value auto-calc"><div class="input-wrap"><input type="number" id="taxRefund" value="" readonly></div></td>
     </tr>
     <!-- 上牌+转移+交强险+车船税 -->
     <tr>
       <td class="label"><span class="icon">✏️</span>上牌+转移+交强险+车船税：</td>
-      <td class="value manual-input"><div class="input-wrap"><input type="number" id="registrationFee" value="600" min="0" step="1"></div></td>
+      <td class="value manual-input"><div class="input-wrap"><input type="number" id="registrationFee" value="" min="0" step="1"></div></td>
     </tr>
     <!-- 通到费（增票模式显示，二手车模式隐藏） -->
     <tr id="rowChannelFee" style="display:none;">
       <td class="label"><span class="lock-icon" data-target="channelFee" onclick="toggleLock(this)">🔒</span>通到费：</td>
-      <td class="value auto-calc"><div class="input-wrap"><input type="number" id="channelFee" value="0" readonly></div></td>
+      <td class="value auto-calc"><div class="input-wrap"><input type="number" id="channelFee" value="" readonly></div></td>
     </tr>
     <!-- 挂靠费用（二手车模式显示，增票模式隐藏） -->
     <tr id="rowAffiliation">
       <td class="label"><span class="icon">✏️</span>挂靠费用：</td>
-      <td class="value manual-input"><div class="input-wrap"><input type="number" id="affiliationFee" value="850" min="0" step="1"></div></td>
+      <td class="value manual-input"><div class="input-wrap"><input type="number" id="affiliationFee" value="" min="0" step="1"></div></td>
     </tr>
     <!-- 物流运费费用 -->
     <tr>
       <td class="label"><span class="icon">✏️</span>物流运费费用：</td>
-      <td class="value manual-input"><div class="input-wrap"><input type="number" id="logisticsFee" value="1400" min="0" step="1"></div></td>
+      <td class="value manual-input"><div class="input-wrap"><input type="number" id="logisticsFee" value="" min="0" step="1"></div></td>
     </tr>
     <!-- 资金成本30天 -->
     <tr>
       <td class="label"><span class="icon">✏️</span>资金成本30天：</td>
-      <td class="value manual-input"><div class="input-wrap"><input type="number" id="capitalCost" value="0" min="0" step="1"></div></td>
+      <td class="value manual-input"><div class="input-wrap"><input type="number" id="capitalCost" value="" min="0" step="1"></div></td>
     </tr>
     <!-- 总成本 -->
     <tr>
       <td class="label"><span class="lock-icon" data-target="totalCost" onclick="toggleLock(this)">🔒</span>总成本：</td>
-      <td class="value auto-calc"><div class="input-wrap"><input type="number" id="totalCost" value="0" readonly></div></td>
+      <td class="value auto-calc"><div class="input-wrap"><input type="number" id="totalCost" value="" readonly></div></td>
     </tr>
     <!-- 汇率 -->
     <tr>
@@ -513,22 +513,22 @@
     <!-- FCA港口成本 = 总成本/汇率 -->
     <tr>
       <td class="label"><span class="lock-icon" data-target="fcaCost" onclick="toggleLock(this)">🔒</span>FCA港口成本：</td>
-      <td class="value auto-calc"><div class="input-wrap"><input type="number" id="fcaCost" value="0" readonly></div></td>
+      <td class="value auto-calc"><div class="input-wrap"><input type="number" id="fcaCost" value="" readonly></div></td>
     </tr>
     <!-- FOB成本 = FCA+400 -->
     <tr>
       <td class="label highlight-blue"><span class="lock-icon" data-target="fobCost" onclick="toggleLock(this)">🔒</span>FOB成本：</td>
-      <td class="value highlight-blue"><div class="input-wrap"><input type="number" id="fobCost" value="0" readonly></div></td>
+      <td class="value highlight-blue"><div class="input-wrap"><input type="number" id="fobCost" value="" readonly></div></td>
     </tr>
     <!-- 销售价格 -->
     <tr>
       <td class="label"><span class="icon">✏️</span>销售价格：</td>
-      <td class="value manual-input"><div class="input-wrap"><input type="number" id="salePrice" value="13000" min="0" step="1"></div></td>
+      <td class="value manual-input"><div class="input-wrap"><input type="number" id="salePrice" value="" min="0" step="1"></div></td>
     </tr>
     <!-- 利润 = 销售价格-FOB成本 -->
     <tr>
       <td class="label highlight-green"><span class="lock-icon" data-target="profit" onclick="toggleLock(this)">🔒</span>利润：</td>
-      <td class="value highlight-green"><div class="input-wrap"><input type="number" id="profit" value="0" readonly></div></td>
+      <td class="value highlight-green"><div class="input-wrap"><input type="number" id="profit" value="" readonly></div></td>
     </tr>
   </table>
 
@@ -592,6 +592,98 @@
   fetchExchangeRate();
   setInterval(fetchExchangeRate, 10 * 60 * 1000);
 
+  // ── localStorage 持久化 ──────────────────────────
+  const STORAGE_KEY = 'fob_calculator_data';
+
+  // 需要保存的所有输入字段 ID
+  const allFieldIds = [
+    'guidePrice', 'discount', 'invoiceAmount', 'taxRefund',
+    'registrationFee', 'channelFee', 'affiliationFee', 'logisticsFee',
+    'capitalCost', 'totalCost', 'fcaCost', 'fobCost', 'salePrice', 'profit'
+  ];
+
+  // 保存当前所有字段值到 localStorage
+  function saveToStorage() {
+    const data = {
+      mode: getSelectedCarType(),
+      lockedFields: Array.from(lockedFields),
+      fields: {}
+    };
+    allFieldIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) data.fields[id] = el.value;
+    });
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch(e) { /* localStorage 不可用时静默失败 */ }
+  }
+
+  // 从 localStorage 恢复数据，返回是否成功
+  function loadFromStorage() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return false;
+      const data = JSON.parse(raw);
+
+      // 恢复模式
+      if (data.mode) {
+        const radios = document.querySelectorAll('input[name="carType"]');
+        radios.forEach(r => { r.checked = (r.value === data.mode); });
+      }
+
+      // 先处理模式切换（显示/隐藏行）
+      onModeChange(true); // true 表示从 localStorage 恢复，不填默认值
+
+      // 恢复字段值
+      if (data.fields) {
+        allFieldIds.forEach(id => {
+          const el = document.getElementById(id);
+          if (el && data.fields[id] !== undefined && data.fields[id] !== '') {
+            el.value = data.fields[id];
+          }
+        });
+      }
+
+      // 恢复锁定状态
+      if (data.lockedFields && Array.isArray(data.lockedFields)) {
+        data.lockedFields.forEach(targetId => {
+          if (!lockedFields.has(targetId)) {
+            lockedFields.add(targetId);
+            const lockEl = document.querySelector(`.lock-icon[data-target="${targetId}"]`);
+            const input = document.getElementById(targetId);
+            if (lockEl) {
+              lockEl.textContent = '🔓';
+              lockEl.classList.add('unlocked');
+            }
+            if (input) {
+              input.removeAttribute('readonly');
+              input.style.cursor = 'text';
+              const td = input.closest('td');
+              if (td) {
+                if (td.classList.contains('highlight-blue') || td.classList.contains('highlight-green')) {
+                  input.style.background = 'rgba(255,255,255,0.25)';
+                } else {
+                  td.className = 'value manual-input';
+                  td.querySelector('.input-wrap').style.border = '1.5px dashed #e0d28a';
+                  td.querySelector('.input-wrap').style.background = '#fffdf5';
+                }
+              }
+            }
+          }
+        });
+      }
+
+      return true;
+    } catch(e) {
+      return false;
+    }
+  }
+
+  // 清除 localStorage
+  function clearStorage() {
+    try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+  }
+
   // ── 模式切换 ──────────────────────────────────
   function getSelectedCarType() {
     const radios = document.getElementsByName('carType');
@@ -601,37 +693,8 @@
     return 'used';
   }
 
-  // 各模式的默认参数配置
-  const modeDefaults = {
-    used: {
-      guidePrice: 90000,
-      discount: 0,
-      registrationFee: 600,
-      affiliationFee: 850,
-      logisticsFee: 1400,
-      capitalCost: 0,
-      salePrice: 13000
-    },
-    ticket05: {
-      guidePrice: 159100,
-      discount: 32000,
-      registrationFee: 0,
-      logisticsFee: 4000,
-      capitalCost: 0,
-      salePrice: 19100
-    },
-    ticket04: {
-      guidePrice: 131400,
-      discount: 42500,
-      registrationFee: 0,
-      logisticsFee: 2000,
-      capitalCost: 0,
-      salePrice: 13500
-    }
-  };
-
-  // 切换模式时更新界面
-  function onModeChange() {
+  // 切换模式时更新界面（skipDefaults: 从 localStorage 恢复时不填默认值）
+  function onModeChange(skipDefaults) {
     const mode = getSelectedCarType();
     const rowChannel = document.getElementById('rowChannelFee');
     const rowAffiliation = document.getElementById('rowAffiliation');
@@ -646,27 +709,34 @@
       rowAffiliation.style.display = 'none';
     }
 
-    // 切换模式时填入默认数据并自动计算
-    applyDefaults(mode);
+    // 切换模式时，如果不是从 localStorage 恢复，则清空所有输入
+    if (!skipDefaults) {
+      clearAllFields(mode);
+    }
+
     if (liveExchangeRate) {
       calculate();
     }
   }
 
-  // 填入默认数据（切换模式时调用）
-  function applyDefaults(mode) {
-    const d = modeDefaults[mode];
-    document.getElementById('guidePrice').value = d.guidePrice;
-    document.getElementById('discount').value = d.discount;
-    document.getElementById('registrationFee').value = d.registrationFee;
-    document.getElementById('logisticsFee').value = d.logisticsFee;
-    document.getElementById('capitalCost').value = d.capitalCost;
-    document.getElementById('salePrice').value = d.salePrice;
+  // 清空所有输入字段为空（切换模式时调用）
+  function clearAllFields(mode) {
+    document.getElementById('guidePrice').value = '';
+    document.getElementById('discount').value = '';
+    document.getElementById('registrationFee').value = '';
+    document.getElementById('logisticsFee').value = '';
+    document.getElementById('capitalCost').value = '';
+    document.getElementById('salePrice').value = '';
+    document.getElementById('invoiceAmount').value = '';
+    document.getElementById('taxRefund').value = '';
+    document.getElementById('channelFee').value = '';
+    document.getElementById('totalCost').value = '';
+    document.getElementById('fcaCost').value = '';
+    document.getElementById('fobCost').value = '';
+    document.getElementById('profit').value = '';
 
     if (mode === 'used') {
-      document.getElementById('affiliationFee').value = d.affiliationFee;
-    } else {
-      document.getElementById('affiliationFee').value = 0;
+      document.getElementById('affiliationFee').value = '';
     }
   }
 
@@ -708,10 +778,20 @@
   });
 
   // ── 计算逻辑 ──────────────────────────────────
+  // 检查是否有任何手动输入字段有值
+  function hasAnyInput() {
+    const manualIds = ['guidePrice', 'discount', 'registrationFee', 'logisticsFee', 'capitalCost', 'salePrice', 'affiliationFee'];
+    return manualIds.some(id => {
+      const el = document.getElementById(id);
+      return el && el.value !== '' && el.value !== undefined;
+    });
+  }
+
   function calculate() {
     if (!liveExchangeRate) return;
 
     const mode = getSelectedCarType();
+    const hasInput = hasAnyInput();
 
     // 获取手动输入值
     const guidePrice      = parseFloat(document.getElementById('guidePrice').value)      || 0;
@@ -721,6 +801,17 @@
     const capitalCost     = parseFloat(document.getElementById('capitalCost').value)     || 0;
     const salePrice       = parseFloat(document.getElementById('salePrice').value)       || 0;
 
+    // 如果没有任何输入，自动计算字段也留空
+    if (!hasInput) {
+      ['invoiceAmount', 'taxRefund', 'channelFee', 'totalCost', 'fcaCost', 'fobCost', 'profit'].forEach(id => {
+        if (!lockedFields.has(id)) {
+          document.getElementById(id).value = '';
+        }
+      });
+      saveToStorage();
+      return;
+    }
+
     // 自动计算字段（未解锁时才自动计算）
     // 开票金额 = 指导价 - 优惠金额
     if (!lockedFields.has('invoiceAmount')) {
@@ -729,7 +820,7 @@
     }
     const invoiceAmount = parseFloat(document.getElementById('invoiceAmount').value) || 0;
 
-    // 退税12.5% = 开票金额 / 1.13 * 0.13
+    // 退税13% = 开票金额 / 1.13 * 0.13
     if (!lockedFields.has('taxRefund')) {
       const taxRefund = invoiceAmount / 1.13 * 0.13;
       document.getElementById('taxRefund').value = Math.round(taxRefund);
@@ -787,6 +878,9 @@
       const profit = salePrice - fobCost;
       document.getElementById('profit').value = Math.round(profit);
     }
+
+    // 每次计算后保存数据到 localStorage
+    saveToStorage();
   }
 
   // ── 锁定/解锁开关 ─────────────────────────────
@@ -837,25 +931,63 @@
   function resetForm() {
     const mode = getSelectedCarType();
 
-    // 只重置当前模式可见的手动输入字段，不动自动计算字段和汇率
-    document.getElementById('guidePrice').value = 0;
-    document.getElementById('discount').value = 0;
-    document.getElementById('registrationFee').value = 0;
-    document.getElementById('logisticsFee').value = 0;
-    document.getElementById('capitalCost').value = 0;
-    document.getElementById('salePrice').value = 0;
+    // 清空所有手动输入字段为空（不填0，不留默认值）
+    document.getElementById('guidePrice').value = '';
+    document.getElementById('discount').value = '';
+    document.getElementById('registrationFee').value = '';
+    document.getElementById('logisticsFee').value = '';
+    document.getElementById('capitalCost').value = '';
+    document.getElementById('salePrice').value = '';
 
     if (mode === 'used') {
-      document.getElementById('affiliationFee').value = 0;
+      document.getElementById('affiliationFee').value = '';
     }
 
-    // 自动计算字段（开票金额、退税、增值票、通到费、总成本、FCA、FOB、利润）和汇率均不重置
+    // 清空所有自动计算字段
+    document.getElementById('invoiceAmount').value = '';
+    document.getElementById('taxRefund').value = '';
+    document.getElementById('channelFee').value = '';
+    document.getElementById('totalCost').value = '';
+    document.getElementById('fcaCost').value = '';
+    document.getElementById('fobCost').value = '';
+    document.getElementById('profit').value = '';
+
+    // 清除所有锁定状态
+    lockedFields.clear();
+    // 恢复所有锁定图标和样式
+    document.querySelectorAll('.lock-icon').forEach(el => {
+      el.textContent = '🔒';
+      el.classList.remove('unlocked');
+      const targetId = el.dataset.target;
+      const input = document.getElementById(targetId);
+      if (input) {
+        input.setAttribute('readonly', '');
+        input.style.cursor = 'default';
+        const td = input.closest('td');
+        if (td) {
+          if (td.classList.contains('highlight-blue') || td.classList.contains('highlight-green')) {
+            input.style.background = '';
+          } else {
+            td.className = 'value auto-calc';
+            td.querySelector('.input-wrap').style.border = '1px solid #e8e8e8';
+            td.querySelector('.input-wrap').style.background = '#f8f9fa';
+          }
+        }
+      }
+    });
+
+    // 清除 localStorage 中当前模式的数据
+    clearStorage();
   }
 
-  // 页面加载时自动计算一次（使用默认值）
+  // 页面加载时：尝试从 localStorage 恢复数据，否则留空
   window.addEventListener('load', function() {
-    onModeChange();
-    setTimeout(calculate, 2000);
+    const restored = loadFromStorage();
+    if (!restored) {
+      // 无存储数据时，初始化界面（显示/隐藏正确行）
+      onModeChange(true);
+    }
+    // 汇率获取成功后会自动触发 calculate()
   });
 
   // 汇率获取成功后自动计算
