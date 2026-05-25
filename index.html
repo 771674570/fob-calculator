@@ -450,11 +450,6 @@
 
   <!-- FOB成本计算器表格 -->
   <table>
-    <!-- 车型 -->
-    <tr>
-      <td class="label"><span class="icon">✏️</span>车型：</td>
-      <td class="value manual-input"><div class="input-wrap"><input type="text" id="carModel" value="ID4 PRO" placeholder="输入车型"></div></td>
-    </tr>
     <!-- 指导价 -->
     <tr>
       <td class="label"><span class="icon">✏️</span>指导价：</td>
@@ -479,11 +474,6 @@
     <tr>
       <td class="label"><span class="icon">✏️</span>上牌+转移+交强险+车船税：</td>
       <td class="value manual-input"><div class="input-wrap"><input type="number" id="registrationFee" value="600" min="0" step="1"></div></td>
-    </tr>
-    <!-- 增值票金额 = 开票金额 -->
-    <tr>
-      <td class="label"><span class="lock-icon" data-target="vatAmount" onclick="toggleLock(this)">🔒</span>增值票金额：</td>
-      <td class="value auto-calc"><div class="input-wrap"><input type="number" id="vatAmount" value="0" readonly></div></td>
     </tr>
     <!-- 通到费（增票模式显示，二手车模式隐藏） -->
     <tr id="rowChannelFee" style="display:none;">
@@ -544,7 +534,6 @@
 
   <!-- 按钮 -->
   <div class="btn-row">
-    <button class="btn btn-calc" onclick="calculate()">计算</button>
     <button class="btn btn-reset" onclick="resetForm()">重置</button>
   </div>
   <div class="footer-note">汇率每10分钟自动刷新 · 仅供内部参考</div>
@@ -580,13 +569,13 @@
     const rateInput = document.getElementById('exchangeRate');
 
     try {
-      liveExchangeRate = await fetchFromEastMoney() - 0.02;
+      liveExchangeRate = await fetchFromEastMoney() - 0.03;
       rateInput.value = liveExchangeRate.toFixed(4);
       statusEl.textContent = '✓ 实时';
       statusEl.className = 'rate-ok';
     } catch (e1) {
       try {
-        liveExchangeRate = await fetchFromFrankfurter() - 0.02;
+        liveExchangeRate = await fetchFromFrankfurter() - 0.03;
         rateInput.value = liveExchangeRate.toFixed(4);
         statusEl.textContent = '✓ 实时';
         statusEl.className = 'rate-ok';
@@ -667,7 +656,6 @@
   // 填入默认数据（切换模式时调用）
   function applyDefaults(mode) {
     const d = modeDefaults[mode];
-    document.getElementById('carModel').value = 'ID4 PRO';
     document.getElementById('guidePrice').value = d.guidePrice;
     document.getElementById('discount').value = d.discount;
     document.getElementById('registrationFee').value = d.registrationFee;
@@ -687,12 +675,29 @@
     r.addEventListener('change', onModeChange);
   });
 
+  // ── 自动计算 + Enter 跳转 ─────────────────────
+  const manualInputs = document.querySelectorAll('input[type="number"]:not([readonly])');
+  manualInputs.forEach((input, index) => {
+    // 输入时自动计算
+    input.addEventListener('input', function() {
+      if (liveExchangeRate) calculate();
+    });
+    // 按 Enter 跳到下一个输入框
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const next = manualInputs[index + 1];
+        if (next) {
+          next.focus();
+          next.select();
+        }
+      }
+    });
+  });
+
   // ── 计算逻辑 ──────────────────────────────────
   function calculate() {
-    if (!liveExchangeRate) {
-      alert('汇率尚未获取到，请稍候再试');
-      return;
-    }
+    if (!liveExchangeRate) return;
 
     const mode = getSelectedCarType();
 
@@ -719,11 +724,6 @@
     }
     const taxRefund = parseFloat(document.getElementById('taxRefund').value) || 0;
 
-    // 增值票金额 = 开票金额
-    if (!lockedFields.has('vatAmount')) {
-      document.getElementById('vatAmount').value = invoiceAmount.toFixed(2);
-    }
-
     let totalCost = 0;
 
     if (mode === 'used') {
@@ -733,7 +733,7 @@
       totalCost = invoiceAmount - taxRefund + registrationFee + affiliationFee + logisticsFee + capitalCost;
     } else {
       // ── 增票模式 ──
-      // 通到费 = 增值票金额 × 系数 + 500
+      // 通到费 = 开票金额 × 系数 + 500
       if (!lockedFields.has('channelFee')) {
         const coefficient = mode === 'ticket05' ? 0.055 : 0.04;
         const channelFee = invoiceAmount * coefficient + 500;
@@ -742,7 +742,6 @@
       const channelFee = parseFloat(document.getElementById('channelFee').value) || 0;
 
       // 总成本 = 开票金额 + 上牌+转移+交强险+车船税 + 通到费 + 物流运费费用 + 资金成本30天 - 退税
-      // Excel公式: =I6+I8+I10+I11+I12-I7
       totalCost = invoiceAmount + registrationFee + channelFee + logisticsFee + capitalCost - taxRefund;
     }
 
@@ -787,7 +786,7 @@
     const td = input.closest('td');
 
     if (lockedFields.has(targetId)) {
-      // 当前是解锁状态 → 锁定
+          // 当前是解锁状态 → 锁定
       lockedFields.delete(targetId);
       el.textContent = '🔒';
       el.classList.remove('unlocked');
@@ -801,7 +800,7 @@
         td.querySelector('.input-wrap').style.border = '1px solid #e8e8e8';
         td.querySelector('.input-wrap').style.background = '#f8f9fa';
       }
-      // 重新计算该字段
+      // 重新计算
       calculate();
     } else {
       // 当前是锁定状态 → 解锁
@@ -827,7 +826,6 @@
     const mode = getSelectedCarType();
 
     // 只重置当前模式可见的手动输入字段，不动自动计算字段和汇率
-    document.getElementById('carModel').value = '';
     document.getElementById('guidePrice').value = 0;
     document.getElementById('discount').value = 0;
     document.getElementById('registrationFee').value = 0;
@@ -847,6 +845,13 @@
     onModeChange();
     setTimeout(calculate, 2000);
   });
+
+  // 汇率获取成功后自动计算
+  const origFetchExchangeRate = fetchExchangeRate;
+  fetchExchangeRate = async function() {
+    await origFetchExchangeRate();
+    calculate();
+  };
 </script>
 
 </body>
