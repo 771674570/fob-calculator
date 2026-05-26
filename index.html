@@ -362,6 +362,10 @@
     }
     .dot-editable  { background: #fff8dc; border: 1px dashed #e0d28a; }
     .dot-readonly  { background: #f0f0f0; border: 1px solid #ddd; }
+    .legend-icon {
+      font-size: 13px;
+      line-height: 1;
+    }
 
     /* 锁定/解锁图标 */
     .lock-icon {
@@ -468,9 +472,9 @@
 
   <!-- 图例 -->
   <div class="legend">
-    <span><span class="dot dot-editable"></span> 可手动修改</span>
-    <span><span class="dot dot-readonly"></span> 自动计算</span>
-    <span><span class="dot" style="background:#f0f4ff;border:1px solid #b0c4de;"></span> 手动覆盖</span>
+    <span><span class="legend-icon">✏️</span> 可手动修改</span>
+    <span><span class="legend-icon">🔒</span> 自动计算</span>
+    <span><span class="legend-icon">🖊️</span> 手动覆盖</span>
   </div>
 
   <!-- FOB成本计算器表格 -->
